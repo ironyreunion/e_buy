@@ -1,0 +1,100 @@
+<!-- 宏文件中的内容是方便重复使用的内容
+    header 宏的名称，方便其他地方使用
+    ctx 表示参数，可以可以有默认值，不需要按顺序赋值
+    isShow=true 表示给变量赋值默认值
+ -->
+
+<#macro header ctx isShow=true>
+<!-- header -->
+    <div class="header">
+        <!-- header-top -->
+        <div class="header-top clear">
+            <div class="container">
+
+                <div class="left">
+                    <span class="home"><em>E购通首页</em></span>
+                    <#if session_user??>
+                        <span><font color="red">${session_user.name}</font>，欢迎来到E购通</span>
+                    <#else>
+                        <span>请<a href="${ctx}/login.html">登录</a></span>
+                        <a href="${ctx}/register.html">免费注册</a>
+                    </#if>
+                    
+                </div>
+                <ul class="right clear">
+                    <li><a href="${ctx}/index.html">我的E购通</a></li>
+                    <li><a href="${ctx}/customer/orderDetails">我的订单</a></li>
+                    <li><a href="#">服务中心</a><i></i>
+                        <ul>
+                            <li><a href="#">子导航一</a></li>
+                            <li><a href="#">子导航二</a></li>
+                            <li><a href="#">子导航三</a></li>
+                            <li><a href="#">子导航四</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">网站导航</a><i></i>
+                        <ul>
+                            <li><a href="#">子导航一</a></li>
+                            <li><a href="#">子导航二</a></li>
+                            <li><a href="#">子导航三</a></li>
+                            <li><a href="#">子导航四</a></li>
+                        </ul>
+                    </li>
+                    <#if session_user??>
+                        <li><a href="${ctx}/customer/logout">注销</a></li>
+                    <#else>
+                        <li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
+                    </#if>
+                </ul>
+            </div>
+        </div>
+        <!-- header-top  end-->
+        
+        <#if isShow==true>
+	        <!-- search-logo -->
+	        <div class="search-logo">   
+	            <div  class="clear container">
+	                <a href="#" class="left lo1"><img src="${ctx}/images/logo.png" alt=""></a>
+	                <form class="left fr1" action="${ctx}/customer/searchs" mothed="POST">
+	                    <p>
+	                        <input placeholder="手机搜索  OPPO N3（N5209）白色" name="title" class="f14 c-999999" type="text"><input type="submit" class="f14 white" value="搜索">
+	                    </p>
+	                    <p class="text-2em">
+	                        <a href="#">618狂欢</a>
+	                        <a href="#">西门子</a>
+	                        <a href="#">199减100</a>
+	                        <a href="#">6.18元</a>
+	                        <a href="#">魅蓝note</a>
+	                        <a href="#">图书</a>
+	                        <a href="#">61812期免息</a>
+	                        <a href="#">领500元</a>
+	                    </p>
+	                </form>
+	                <span class="right">
+	                    <a href="${ctx}/customer/showBuyCar" class="shopingcart"></a><font id="totalNum">0</font>
+	                    <a href="${ctx}/customer/showBuyCar">我的购物车</a>
+	                </span>
+	            </div>
+	            
+	        </div>
+	        <!-- search-logo end-->
+	        <script>
+		        //异步获取购物车中商品的数量
+		        var refreshShopCarNum = function(){
+		            var url ="${ctx}/customer/loadAjaxShopCarNum";
+		            $.post(url,function(data){
+		                if(data.status == 0){
+		                    $("#totalNum").text(data.totalNum); 
+		                }   
+		           },"json");
+		        }
+		    
+		        //异步获取购物车中商品的数量
+		        $(function(){
+		            refreshShopCarNum();
+		        })
+		    </script>
+        </#if>
+    </div>
+    <!-- header end-->
+</#macro>

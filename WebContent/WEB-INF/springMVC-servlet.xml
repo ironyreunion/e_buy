@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+	<!-- 加载springmvc的配置 -->
+    <mvc:annotation-driven/>
+	<!-- 配置需要扫描的包 -->
+	<context:component-scan base-package="ebuy.action"/>
+    <!-- 配置默认的请求资源名，若请求为“/”，则发起customer/home请求 -->
+    <mvc:view-controller path="/" view-name="redirect:/customer/home" />
+    <!-- 配置默认的请求资源名，若请求为“/admin”，则发起admin/login请求 -->
+    <mvc:view-controller path="/admin" view-name="forward:/admin/login" />
+    <!-- 默认的静态资源处理器 -->
+    <mvc:default-servlet-handler/>
+    
+    
+    <!-- 配置视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".html"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="requestContextAttribute" value="request"></property>
+    </bean>
+    
+    <!-- 配置Freemarker模板加载路径 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <!-- 指定freemarker模板所在文件夹（前缀）
+            templateLoaderPath 表示配置一个资源前缀
+            templateLoaderPaths 表示可以配置多个资源前缀，搜索资源的顺序是先找前面定义的再找后面定义的。
+                            找到就不再继续寻找
+         -->
+        <property name="templateLoaderPaths" value="/pages/,/WEB-INF/admin/"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+    
+    <!-- 配置文件上传解析器 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 编码，默认编码是ISO-8859-1 -->
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <!-- 配置允许上传文件的大小，单位字节 -->
+        <property name="maxUploadSize" value="5848220"></property>
+    </bean>
+    
+    <!-- 配置后台拦截器类 -->
+    <bean id="loginInterceptor" class="ebuy.interceptor.LoginInterceptor" />
+    <mvc:interceptors>
+    <mvc:interceptor>
+            <!-- 配置需要拦截请求 -->
+            <mvc:mapping path="/admin/*/*"/>
+            
+            <mvc:mapping path="/customer/submitOrder"/>
+            <mvc:mapping path="/customer/saveOrder"/>
+            <mvc:mapping path="/customer/orderAlipay"/>
+            <mvc:mapping path="/customer/toAlipay"/>
+            <mvc:mapping path="/customer/orderDetails"/>
+            
+            <!-- 配置不需要拦截请求 -->
+            <mvc:exclude-mapping path="/admin/"/>
+            <mvc:exclude-mapping path="/customer/searchs"/>
+            <mvc:exclude-mapping path="/customer/login"/>
+            <mvc:exclude-mapping path="/customer/logout"/>
+            <mvc:exclude-mapping path="/customer/home"/>
+            <mvc:exclude-mapping path="/customer/register"/>
+            <mvc:exclude-mapping path="/customer/active"/>
+            <mvc:exclude-mapping path="/customer/active"/>
+            <!-- 使用拦截器的名称 -->
+            <ref bean="loginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    
+</beans>

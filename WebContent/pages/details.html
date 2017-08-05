@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>E购通电子商务平台-商品详情</title>
+	<#include "header.html"/>
+	<!-- 引入宏文件到当前页面，并通过 yyd_footer进行使用 -->
+	<#import "/macros/header_macro.html" as yyd_header>
+	<#import "/macros/footer_macro.html" as yyd_footer>
+	<#import "/macros/nav_macro.html" as yyd_nav>
+	<link rel="stylesheet" href="${ctx}/css/details.css"/>
+	<!-- 引入jQuery放大镜插件需要的样式 -->
+	<link rel="stylesheet" href="${ctx}/css/jquery.jqzoom.css" type="text/css"/>
+	<!-- 引入jQuery放大镜插件 -->
+	<script type="text/javascript" src="${ctx}/js/jquery.jqzoom-core.js"></script>
+	
+	<script src="${ctx}/js/artDialog-6.0.2/dist/dialog-min.js"></script>
+	<link rel="stylesheet" href="${ctx}/js/artDialog-6.0.2/css/ui-dialog.css">
+	<script type="text/javascript">
+		/** 文档加载完 */
+		$(function(){
+			/** 为+号绑定事件 */
+			$("#add").click(function(){
+				var buyNum = $("#buy_num");
+				/** 设置文本框值 */
+				buyNum.val(parseInt(buyNum.val()) + 1);
+			});
+			
+			/** 为-号绑定事件 */
+			$("#min").click(function(){
+				var buyNum = $("#buy_num");
+				/** 如果购买数量小于1直接返回 */
+				if (parseInt(buyNum.val()) == 1){
+					return;
+				}
+				/** 设置文本框值 */
+				buyNum.val(parseInt(buyNum.val()) - 1);
+			});
+			/** 为购买数量文本框绑定失去焦点事件 */
+			$("#buy_num").blur(function(){
+				var num = this.value;
+				/** 如果不是数字 */
+				if (isNaN(num)){
+					this.value = "1";
+				}else{
+					/** 如果是小数、负数、第一位数定不能为零 */
+					if (!/^[1-9]\d+$/.test(num)){
+						this.value = "1";
+					}
+				}
+			});
+			
+			/** 获取所有的存放物品图片的li元素 */
+			var lis = $("#my_ul > li");
+			/** 为物品图片添加css */
+			lis.css("cursor", "pointer");
+			/** 定义显示的数量 */
+			var pageSize = 5;
+			/** 计算出总页数 */
+			var totalSize = Math.ceil(lis.length / pageSize);
+			/** 定义当前页码 */
+			var pageIndex = 1;
+
+			/** 为存放物品图片li元素绑定点击事件 */
+			lis.click(function(){
+				/** 设置上面大图为当前用户选中的图片 */
+				$("#curImg").attr("src", $(this).find("img").attr("src"));
+				/** 删除所有的class */
+				lis.removeClass();
+				/** 当前的添加class */
+				$(this).addClass("active");
+			});
+			
+			/** 为切换到下一组绑定事件 */
+			$(".next").click(function(){
+				/** 如果当前页码小于总页数 */
+				if (pageIndex < totalSize){
+					/** 删除所有的class */
+					lis.removeClass();
+					/** 将以前显示的隐藏 */
+					lis.slice((pageIndex - 1) * pageSize, pageIndex * pageSize).hide(500);
+					/** 计算出下一组开始索引 */
+					var index = pageIndex * pageSize;
+					/** 开启延迟的定时器 */
+					setTimeout(function(){
+						/** 当前的添加class */
+						$(lis[index]).addClass("active");
+						/** 设置上面大图为当前用户选中的图片 */
+						$("#curImg").attr("src", $(lis[index]).find("img").attr("src"));
+						/** 触发当前放大镜图片的点击事件 */
+						$(lis[index]).find("a[rel]").trigger("click");
+					},500);
+					/** 当前页数自加 */
+					pageIndex++;
+				}
+			});
+
+			/** 为切换到上一组图片绑定事件 */
+			$(".prev").click(function(){
+				if (pageIndex > 1){
+					/** 当前页数自减 */
+					pageIndex--;
+					/** 将以前隐藏的显示出来 */
+					lis.slice((pageIndex - 1) * pageSize, pageIndex * pageSize).show(500);
+					/** 删除class */
+					lis.removeClass();
+					/** 当前的添加class */
+					$(lis[(pageIndex - 1) * pageSize]).addClass("active");
+					/** 设置上面大图为当前用户选中的图片 */
+					$("#curImg").attr("src", $(lis[(pageIndex - 1) * pageSize])
+								.find("img").attr("src"));
+				    /** 触发当前放大镜图片的点击事件 */
+					$(lis[(pageIndex - 1) * pageSize]).find("a[rel]").trigger("click");
+				}
+			});
+
+			/** 使用图片放大镜 */
+			$('#jqzoom').jqzoom({
+				zoomType: 'standard', // 类型 'standard', 'drag', 'innerzoom', 'reverse'
+				lens:true, // 是否显示蒙版拖动框
+				preloadImages: false, // 是否预加载图片
+				alwaysOn:false, // 是否一进入就显示
+		        title : false, // 是否显示标题
+		        zoomWidth : 520, // 宽度
+				zoomHeight : 300 // 高度
+			});
+			
+			/** 为选择颜色、版本、购买方式 绑定事件 */
+			$('.d2').on("click",'.banb',function(){
+				/** 添加bant的class 再删除banb的class */
+				$(this).addClass('bant').removeClass('banb');
+			}).on("click",'.bant',function(){
+				$(this).addClass('banb').removeClass('bant');
+			});
+			
+			/** 加入购物车 */
+			$("#addBuyCar").click(function(){
+				var url ="${ctx}/customer/addBuyCar";
+				var params = {"goodsId":$("#goodsId").val(),"buyNum":$("#buy_num").val()};
+				$.post(url,params,function(data){
+					var msg = "添加失败!";
+					if(data.status == 0){
+						msg = "添加成功!";
+						//更新购物车数量显示(页面元素在header_macro.html)
+						//$("#totalNum").text(data.totalNum);
+						refreshShopCarNum();
+					}
+					var d = dialog({
+						title: '温馨提示',
+					    content: '<font size=6 color=red>'+msg+'</font>'
+					});
+					d.show();
+					setTimeout(function () {
+					    d.close().remove();
+					}, 1000);	
+			   },"json");
+				
+			});
+		});
+		
+	</script>
+</head>
+<body>
+	<@yyd_header.header ctx="${ctx}"/>
+	<!-- nav 导航区开始 -->
+	<@yyd_nav.nav ctx="${ctx}"/>
+	<!-- content -->
+	<div class="content" style="padding-top:5px";>
+		<div class="container">
+			<!-- crumbs -->
+			<div class="crumbs">
+				<a class="home" href="${ctx}/"></a>
+				<font>></font>
+				<a href="${ctx}/customer/searchs?goodsType.code=${maxGoodsType.code}">${maxGoodsType.name}</a><font>></font>
+				<a href="${ctx}/customer/searchs?goodsType.code=${goods.goodsType.code}">${goods.goodsType.name}</a><font></font>
+			</div>
+			<!-- crumbs end-->
+			<!-- section -->
+			<div class="section clear">
+				<div class="section-main left">
+					<div class="img-2 left">
+						<!-- 图片放大镜显示框 -->
+						<a id="jqzoom" href="${ctx}/${goods.image}" rel='gal1'>
+							<img id="curImg" src="${ctx}/${goods.image}" width="400" height="410" style="border: 2px solid #666;"/>
+						</a>
+						<!-- 产品图片 -->
+						<div class="p-list" style="clear:left;padding-top:5px;">
+							<div class="p-wrap">
+								<ul id="my_ul" class="clear xt_">
+									<li class="active">
+										<i></i>
+										<a href='javascript:void(0);' rel="{gallery:'gal1',smallimage:'${ctx}/${goods.image}',largeimage:'${ctx}/${goods.image}'}">
+											<img src="${ctx}/${goods.image}"/>
+										</a>
+									</li>
+									<li>
+										<i></i>
+										<a href='javascript:void(0);' rel="{gallery:'gal1',smallimage:'${ctx}/images/pic/1.jpg',largeimage:'${ctx}/images/pic/1.jpg'}">
+											<img src="${ctx}/images/pic/1.jpg"/>
+										</a>
+									</li>
+									<li>
+										<i></i>
+										<a href='javascript:void(0);' rel="{gallery:'gal1',smallimage:'${ctx}/images/pic/3.jpg',largeimage:'${ctx}/images/pic/3.jpg'}">
+											<img src="${ctx}/images/pic/3.jpg"/>
+										</a>
+									</li>
+									<li>
+										<i></i>
+										<a href='javascript:void(0);' rel="{gallery:'gal1',smallimage:'${ctx}/images/pic/4.jpg',largeimage:'${ctx}/images/pic/4.jpg'}">
+											<img src="${ctx}/images/pic/4.jpg"/>
+										</a>
+									</li>
+									<li>
+										<i></i>
+										<a href='javascript:void(0);' rel="{gallery:'gal1',smallimage:'${ctx}/images/pic/5.jpg',largeimage:'${ctx}/images/pic/5.jpg'}">
+											<img src="${ctx}/images/pic/5.jpg"/>
+										</a>
+									</li>
+									<li>
+										<i></i>
+										<a href='javascript:void(0);' rel="{gallery:'gal1',smallimage:'${ctx}/images/pic/6.jpg',largeimage:'${ctx}/images/pic/6.jpg'}">
+											<img src="${ctx}/images/pic/6.jpg"/>
+										</a>
+									</li>
+								</ul>
+								<!-- 向左 -->
+								<a class="prev" href="javascript:;">&lt;</a>
+								<!-- 向右 -->
+								<a class="next" href="javascript:;">&gt;</a>
+							</div>
+						</div>
+						<!-- 产品图片 -->
+					</div>
+					<div class="details left">
+						<h1 class="f18 c-333333">${goods.title}</h1>
+						<p class="f12 c-cc3333">100%外贸原单产品，多年外贸出口经验</small>
+						<p class="f12 c-cc3333">【3-14天闪电发货】【地级市包物流】</small>
+						<div class="d1 clear">
+							<div class="d1_l">
+								<span><i>参考价：</i>￥${goods.price}</span><a>年中庆典</a><br/>
+								<strong><b>促销价：</b>￥${goods.favorablePrice}</strong>
+							</div>
+							
+						</div>
+						<div class="d2 clear">
+							<span>选择颜色：</span>
+							<a href="javascript:void(0)" class="bant">雪域白</a>
+							<a href="javascript:void(0)" class="banb">精灵黑</a>
+							<br/><br/><br/>
+							<span>选择版本：</span>
+							<a href="javascript:void(0)" class="bant">移动联通4G</a>
+							<a href="javascript:void(0)" class="banb">电信4G双卡版</a>
+							<br/><br/><br/>
+							<span>购买方式：</span>
+							<a href="javascript:void(0)" class="bant">非合约机</a>
+							<a href="javascript:void(0)" class="banb">购机入网送话费</a>
+							<a href="javascript:void(0)" class="banb">0元购机</a>
+						</div>
+						
+							<p class="p1"><span>送至：</span>
+							<select name="" id="">
+							<option value="">广东省广州市天河区</option>
+							</select>
+							<em>下单后预计48小时为您送达</em></p>
+							<div class="d4">
+								<font class="clear text-middle kj_">
+									<input type="hidden" id="goodsId" name="goodsId" value="${goods.id}">
+									<input type="text"  id="buy_num" value="1" style="height:25px;"  size="2" class="left"/>
+									<span class="left">
+									<a class="c-333333 bold" href="javascript:void(0)" id="add">+</a>
+									<a class="c-666666 bold" href="javascript:void(0)" id="min" style="border-top: 1px solid #7d7d7d;">-</a></span>
+								</font>
+								<a class="text-middle shoppingcart" href="javascript:void(0)" id="addBuyCar"><i></i>加入购物车</a>
+							</div>
+						
+					</div>	
+				</div>
+			</div>
+			<!-- section end -->
+			
+			<!-- section 商品描述开始 -->
+			<div class="section clear">
+				<div class="section-main sm1 right">
+					<div class="section-top">
+						<div class="d1 clear">
+							<div class="left tabs-sption">
+								<span class="active">商品介绍</span>
+							</div>
+						</div>
+						<div>
+							${goods.description}
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- section end 商品描述结束-->
+				
+		</div>
+	</div>
+	<!-- content -->
+	<!-- 通过 yyd_footer.宏名称进行使用 -->
+	<@yyd_footer.footer/>
+</body>
+</html>

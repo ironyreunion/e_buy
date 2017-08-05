@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ebuy.mapper.GoodsTypeMapper">
+
+    <sql id="findGoodsType">
+        select * from e_goods_type 
+    </sql>
+    
+    <!-- 查询所有商品类型 -->
+    <select id="getGoodsTypeList" resultType="GoodsType">
+            <include refid="findGoodsType"/>
+                order by code
+    </select>
+    
+    <!-- 根据Code查询指定商品类型 -->
+    <select id="findGoodsTypeByCode" resultType="GoodsType">
+            <include refid="findGoodsType"/>
+                where code=#{code} order by code
+    </select>
+    
+    <!-- 查找大类型 -->
+    <select id="getMaxType" resultType="map">
+        select code,name from e_goods_type where length(code)=4 order by code asc
+    </select>
+    
+    <!-- 查找小类型 -->
+    <select id="getMinType" resultType="map">
+        select code,name from e_goods_type where length(code)=8 and code like concat('',#{code},'%') order by code asc
+    </select>
+</mapper>

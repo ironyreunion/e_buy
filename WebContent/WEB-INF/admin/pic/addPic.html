@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<#assign ctx=request.contextPath>
+<html>
+	<head>
+    	<title>轮播管理-添加轮播数据</title>
+    	<meta charset="UTF-8">
+     	<link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap.css" />
+	    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap-responsive.css" />
+	    <link rel="stylesheet" type="text/css" href="${ctx}/css/style.css" />
+	    <link rel="stylesheet" type="text/css" href="${ctx}/css/admin-right.css" />
+	    <script type="text/javascript" src="${ctx}/js/jquery-1.11.0.js"></script>
+		<script type="text/javascript" src="${ctx}/js/jquery-migrate-1.2.1.js"></script>
+		
+    	<script type="text/javascript">
+    	 	$(function(){
+		    	/** 为添加商品表单绑定提交事件 */
+		    	$("#addForm").submit(function(){
+		    		/** 表单输入校验 */
+		    		var pic = $("#pic");
+		    		var requestUrl = $("#requestUrl");
+		    		var msg = "";
+		    		
+		    		// 判断表单元素
+		    		if ($.trim(pic.val()) == ""){
+		    			msg = "请选择需要上传的轮播图片！";
+		    			pic.focus();
+		    		}else if ($.trim(requestUrl.val()) == ""){
+		    			msg = "轮播请求URL不能为空！";
+		    			requestUrl.focus();
+		    		}
+		    		if (msg != ""){
+		    			alert(msg);
+		    			return false;
+		    		}else{
+		    			return true;
+		    		}
+		    	});
+		    	
+		    	/** 为返回按钮绑定点击事件 */
+				$('#backid').click(function(){
+					window.location.href = "${ctx}/admin/picturcarousel/picList";
+				});
+    	 	});
+		</script>
+	</head>
+	<body>
+		<table class="table table-bordered table-hover definewidth m10">
+		    <form id="addForm" action="${ctx}/admin/pictureCarousel/addPic" method="POST" class="definewidth m20" enctype="multipart/form-data">
+		        <tr>
+		            <td width="10%" class="tableleft">轮播图片</td>
+		            <td><input type="file" name="pic" id="pic"/></td>
+		        </tr>
+		        <tr>
+		        	<td width="10%" class="tableleft">轮播请求URL</td>
+		            <td><input type="text" name="requestUrl" id="requestUrl"/></td>
+		        </tr>
+		         <tr>
+		        	<td>
+		            	&nbsp;&nbsp;<button type="submit" class="btn btn-primary">保存</button>
+		            </td>
+		            <td>
+		                &nbsp;&nbsp;<button type="button" class="btn btn-success" name="backid" id="backid">返回</button>
+		            </td>
+	        	</tr>
+		    </form>
+		</table>
+	</body>
+</html>

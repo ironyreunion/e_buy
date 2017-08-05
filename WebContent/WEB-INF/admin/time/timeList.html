@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<#assign ctx=request.contextPath>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/admin-right.css" />
+    <script type="text/javascript" src="${ctx}/js/jquery-1.11.0.js"></script>
+    <script type="text/javascript" src="${ctx}/js/jquery-migrate-1.2.1.js"></script>
+
+    <script src="${ctx}/js/artDialog-6.0.2/dist/dialog-min.js"></script>
+	<link rel="stylesheet" href="${ctx}/js/artDialog-6.0.2/css/ui-dialog.css">
+	<script type="text/javascript">
+     function deletes(id){
+    		var d = dialog({
+				title: '温馨提示',
+			    content: '<img src=${ctx}/images/logo2.png><br><font size=6 color=red>您确定要删除对应的数据吗?</font>',
+			    okValue:'确定',
+			    ok:function(){
+			    	this.title("请稍等...");
+			    	window.location="${ctx}/admin/timelimited/delete?id="+id;
+			    	return false;
+			    },
+			    cancelValue:'取消',
+			    cancel:function(){}
+			});
+			d.showModal();
+    	}
+     
+     //添加商品请求
+     $(function(){
+    	$("#addnew").click(function(){
+    		window.location="${ctx}/admin/timeLimited/toAddTime";
+    	}); 
+     });
+     
+     </script>
+</head>
+<body>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button type="button" class="btn btn-success" id="addnew">添加</button>
+<table class="table table-bordered table-hover definewidth m10" >
+    <thead>
+    <tr>
+        <th>编号</th>
+        <th>抢购时间</th>
+        <th>抢购商品名称</th>
+        <th>是否有效</th>
+        <th colspan="2" style="text-align:center">操作</th>
+    </tr>
+    </thead>
+    	<#if timeLimitedList??>
+    	<#list timeLimitedList as time>
+	     <tr>
+            <td>${time.id}</td>
+            <td>
+            	${time.limitDate?string("yyyy-MM-dd")}
+            </td>
+            <td>${time.goods.title}</td>
+            <td>
+            	<#if time.isEnd = 1>
+            		<font color="green">有效</font>
+            	<#else>
+            	     <font color="red">无效</font>
+            	</#if>
+            </td>
+            <td>
+            	<a href="${ctx}/admin/timelimited/showUpdate?id=${time.id}">修改</a>
+            </td>
+             <td>
+             	<a href="javascript:;" onclick="deletes(${time.id})">删除</a>
+            </td>
+        </tr>
+        </#list>
+        </#if>
+        </table>
+
+  </body>
+</html>

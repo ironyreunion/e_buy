@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>E购通电子商务平台-首页</title>
+	
+	<#include "header.html" />
+	<#import "/macros/header_macro.html" as lhb_header>
+	<#import "/macros/footer_macro.html" as lhb_footer>
+	<#import "/macros/nav_macro.html" as lhb_nav>
+
+	<script type="text/javascript">
+		
+		/** 文档加载完 */
+		$(function(){
+			/** 获取所有的主菜单 */
+			var menu = $(".nav-menu > li");
+			/** 为所有的主菜单绑定onmouseover与onmouseout事件 */
+			menu.hover(
+				function(){ // onmouseover
+					/** 为主菜单li添加样式 */
+					$(this).addClass("active");
+					/** 通过主菜单找对应的子菜单用300毫秒滑下显示出来 */
+					$(this).find(".sub-Menu").slideDown(300);
+				},
+				function(){ // onmouseout
+					/** 首页主菜单li的样式不删除 */
+					if (this.id != "home"){
+						/** 删除主菜单li样式 */
+						$(this).removeClass("active");
+					}
+					/** 通过主菜单找对应的子菜单用10毫秒滑上隐藏出来 */
+					$(this).find(".sub-Menu").slideUp(10);
+				}
+			);
+			
+			/**======== 图片轮播广告 =========*/
+			/** 定义计数器 */
+			var cursor = 0;
+			/** 定义当前显示的li中图片索引号 */
+			var current = 0;
+			/** 获取所有的图片切换圆点*/
+			var lis = $("#ol_circle > li");
+			/** 迭代所有的li元素 */
+			lis.each(function(i, item){
+				/** 为它们绑定onmouseover事件 */
+				$(item).mouseover(function(event){
+					/** 当前li添加class样式 */
+					$(this).addClass("active");
+					/** 其它的li删除红色圆点class样式 */
+					lis.not(this).removeClass("active");
+					/** 显示当前圆点对应的图片 */
+					$("#ul_img_ad > li").eq(i).fadeIn(500);
+					/** 设置其它的图片隐藏 */
+					$("#ul_img_ad > li").not($("#ul_img_ad > li").eq(i)).hide();
+					/** 设置当前索引为用户光标对应的图片索引号 */
+					cursor = i;
+					/** 缓存当前显示图片的索引号 */
+					current = i;
+				})
+			});
+			
+			/** 开启定时器 */
+			window.setInterval(function(){
+				if (cursor >= lis.length){
+					cursor = 0;
+				}
+				/** 获取当前切换圆点li */
+				$(lis.get(cursor)).trigger("mouseover");
+				/** 自加 */
+				cursor++;
+			}, 5000);
+
+			/** 图片广告向左 */
+			$(".prev").click(function(){
+				cursor = current;
+				if (cursor < 0){
+					cursor = lis.length; // 初始化它的长度
+				}
+				/** 自减 */
+				cursor--;
+				/** 获取当前切换圆点li,触发它的mouseover事件 */
+				$(lis.get(cursor)).trigger("mouseover");
+			});
+
+			/** 图片广告向右 */
+			$(".next").click(function(){
+				cursor = current;
+				if (cursor >= lis.length - 1){
+					cursor = -1; // 初始化为-1
+				}
+				/** 自加 */
+				cursor++;
+				/** 获取当前切换圆点li */
+				$(lis.get(cursor)).trigger("mouseover");
+				
+			});
+
+			
+			
+			/** 限时抢购(倒计时) */
+			//$("#down_count_span").downCount("2015-07-03 00:00:00", "还剩", "结束");
+			
+		});
+	</script>
+</head>
+<body>
+	<@lhb_header.header ctx="${ctx}"/>
+
+    <@lhb_nav.nav ctx="${ctx}"/>
+	
+	<!-- banner 横幅广告 -->
+	<div class="banner">
+		
+		<div class="banner-wrap">
+			<ul id="ul_img_ad" class="clear">
+			    <#if pictureCarouselList??>
+			        <#list pictureCarouselList as pic>
+			            <li><a href="#">
+			                <img style="width:1440px;" src="${ctx}/${pic.imageUrl}">
+			            </a></li>
+			        </#list>
+			    </#if>
+			</ul>
+		</div>
+		<div class="container">
+			<!-- 向左 -->
+			<a class="prev" href="javascript: void(0)"></a>
+			<!-- 向右 -->
+			<a class="next" href="javascript: void(0)"></a>
+			<!-- 图片切换的圆点 -->
+			<ol id="ol_circle" class="clear">
+				<li class="active"></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ol>
+		</div>
+	</div>
+	<!-- banner end-->
+
+
+	<!-- content -->
+	<div class="content">
+		<div class="container">
+			<div class="section">
+				<div class="tips clear">
+					<span class="left f24 white">限时抢购</span>
+					<span class="left white text-bottom s1">
+						<!-- 还剩<font>0</font><font>0</font><strong>:</strong>
+						<font>0</font><font>0</font><strong>:</strong>
+						<font>0</font><font>0</font>结束 -->
+					</span>
+					<a class="right b-tgl" href="#"><em>下期预告</em></a>
+				</div>
+				<div class="clear bg-white pr1">
+					<a href="#" class="left img-bg"><img src="${ctx}/images/product/1.jpg" alt=""></a>
+					<ul class="right">
+						<#if timeLimitedList??>
+                        <#list timeLimitedList as time>
+                            <li class="clear qg_">
+                                <a href="${ctx}/customer/detail?id=${time.goods.id}" class="left l1">
+                                <img src="${ctx}/${time.goods.image}" alt=""></a>
+                                <span class="text-top left">
+                                    <a href="${ctx}/customer/detail?id=${time.goods.id}">${time.goods.brandName}
+                                    <br>
+                                        <#if time.goods.title?length lt 8>
+                                            ${time.goods.title}
+                                        <#else>
+                                            ${time.goods.title[0..8]}
+                                        </#if>                                    </a>
+                                    <p>抢码价：</p>
+                                    <p class="f18 bg-c40000 white">¥${time.goods.favorablePrice}</p>
+                                    <p>【限时疯抢】</p>
+                                </span>
+                                <div id="aa_${time_index}"></div>
+                                <script type="text/javascript">
+                                    //抢购倒计时操作
+                                    $("#aa_${time_index}").downCount("${time.limitDate?string('yyyy-MM-dd HH:mm:ss')}","还剩[","]结束");
+                                </script>
+                            </li>
+                        </#list>
+                        </#if>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- content -->
+	
+	
+	<@lhb_footer.footer />
+</body>
+</html>

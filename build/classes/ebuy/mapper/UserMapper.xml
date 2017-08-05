@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ebuy.mapper.UserMapper">
+	<sql id="findUser">
+		select * from e_user 
+	</sql>
+	
+	<!-- 查询所有用户，或者根据条件id进行模糊查询 -->
+    <select id="getUserList" resultMap="userBaseResultMap">
+            <include refid="findUser"/>
+            <if test="userId != null &amp;&amp; userId != '' ">
+                <where>
+                    user_id like concat('%',#{userId},'%')
+                </where>
+            </if>
+            
+    </select>
+	
+	<!-- 根据用户名和密码和权限 查询是否是管理员 -->
+    <select id="getAdmin" resultMap="userBaseResultMap">
+            <include refid="findUser"/>
+            <where>
+                user_id = #{userId} and pass_word = #{password} and role = #{role}
+            </where>
+    </select>
+    
+    <!-- 通过用户编号查询用户信息（更新信息） -->
+    <select id="getUserById" resultMap="userBaseResultMap">
+            <include refid="findUser"/>
+            <where>
+                id = #{id}
+            </where>
+    </select>
+    
+	<!-- 根据用户名和密码查询用户 -->
+	<select id="getUserByUserIdAndByPassword" resultMap="userBaseResultMap">
+			<include refid="findUser"/>
+			<where>
+				user_id = #{userId} and pass_word = #{password}
+			</where>
+	</select>
+	
+	<!-- 根据用户名查询账号 -->
+    <select id="getUserByUserId" resultType="int">
+            select count(*) from e_user where user_id = #{userId}
+    </select>
+	
+	<!-- 根据id，删除用户账号 -->
+    <delete id="deleteUser">
+            delete from e_user where id = #{id}
+    </delete>
+	
+	<!-- 更新用户信息 -->
+    <update id="updateUser">
+            update e_user set name=#{name}, role=#{role},province=#{province},
+            city=#{city},phone=#{phone},email=#{email},address=#{address},
+            birthday=#{birthday} where id = #{id}
+    </update>
+    
+	<!-- 激活用户，更改激活状态 -->
+	<update id="activeUser">
+            update e_user set active_status = 1 where user_id = #{userId} and active_code = #{activeCode}
+    </update>
+	
+	<!-- 存入/新增用户 -->
+	<insert id="save">
+        insert into e_user(
+            USER_ID,PASS_WORD,NAME,PROVINCE,CITY,
+            SEX,BIRTHDAY,EMAIL,PHONE,CREATE_DATE,ACTIVE_CODE) 
+        values
+        (#{userId},#{password},#{name},#{province},#{city},#{sex},
+         #{birthday},#{email},#{phone},#{createDate},#{activeCode}
+        )
+    </insert>
+	
+	<!-- 定义ResultMap -->
+	<resultMap id="userBaseResultMap" type="User" autoMapping="true">
+		<!-- 定义列和java对象属性的对应关系 -->
+		<result column="user_id" property="userId"/>
+		<result column="pass_word" property="password"/>
+		<result column="create_Date" property="createDate"/>
+		<result column="active_Status" property="activeStatus"/>
+		<result column="active_Code" property="activeCode"/>
+	</resultMap>
+	
+	
+	
+</mapper>

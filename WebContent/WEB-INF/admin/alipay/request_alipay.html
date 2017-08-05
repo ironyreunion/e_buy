@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<#assign ctx=request.contextPath>
+<html>
+<head>
+    <title>E购通-自动跳转到支付宝进行结算</title>
+	<meta charset="UTF-8">
+    <script type="text/javascript" src="${ctx}/js/jquery-1.11.0.js"></script>
+   <script type="text/javascript">
+      $(function(){
+    		$("#alipayForm").submit();
+      });
+   </script>
+</head>
+<body>
+    <form action="${requestUrl}" id="alipayForm" method="POST">
+    	 <#list params?keys as key> 
+		 	<input type="hidden" name="${key}" value="${params[key]}"/>
+         </#list>
+    </form>
+</body>
+</html>

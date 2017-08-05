@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <title>E购通电子商务平台-购物车</title>
+    <#include "header.html"/>
+    <!-- 引入宏文件到当前页面，并通过 yyd_footer进行使用 -->
+    <#import "/macros/header_macro.html" as lhb_header>
+    <#import "/macros/footer_macro.html" as lhb_footer>
+    <#import "/macros/nav_macro.html" as lhb_nav>
+    <link rel="stylesheet" href="${ctx}/css/style1.css"/>
+</head>
+<body>
+    <@lhb_header.header ctx="${ctx}"/>
+    <@lhb_nav.nav ctx="${ctx}"/>
+
+	
+	<div class="content">
+        <div class="container">
+            <div class="wd_dd">
+                <table class="xxt_">
+                <thead>
+                    <tr>
+                        <th class="th1">商品名称</th>
+                        <th>单价（元）</th>
+                        <th>数量</th>
+                        <th>实付款（元）</th>
+                        <th>交易状态</th>
+                        <th>交易操作</th>
+                    </tr>
+                </thead>
+                </table>
+                
+                <!-- 迭代订单 -->
+                <#if orderList??>
+                <#list orderList as order>
+                    <table class="qrsh_" style="border-top:0px solid #fff;">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span>${order.createDate?string("yyyy-MM-dd HH:mm:ss")}&nbsp;&nbsp;</span>
+                                    <span>订单编号：</span><span>${order.orderCode}</span>
+                                    
+                                </th>
+                                <#if order.alipay == 0>
+                                    <th colspan="5" style="text-align:right; padding-right:90px;">
+                                        【<a href="${ctx}/customer/toAlipay?orderCode=${order.orderCode}">去支付</a>】
+                                    </th>
+                                </#if>  
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <#list order.orderItems as orderItem>
+                                <tr>
+                                    <td class="td1"><img src="${ctx}/${orderItem.goods.image}">${orderItem.goods.title}</td>
+                                    <td>${orderItem.goods.favorablePrice}</td>
+                                    <td>${orderItem.orderNum}</td>
+                                    <td style="color:red;">
+                                    ${orderItem.goods.favorablePrice * orderItem.orderNum}
+                                    </td>
+                                    <td>
+                                        <#if order.alipay == 0>
+                                            <font color="red">未支付</font>
+                                        <#else>
+                                            <font color="blue">已支付</font>
+                                        </#if>
+                                    </td>
+                                    <td>
+                                        <#if order.alipay == 0>
+                                            <font color="red">待支付</font>
+                                        <#else>
+                                            <#if order.tradingStatus == 0>
+                                                <a href="javascript:void(0)">物流运输中</a>
+                                            <#else>
+                                                <a href="javascript:void(0)">交易成功</a>
+                                            </#if>
+                                        </#if>
+                                    </td>
+                                </tr>
+                            </#list>
+                        </tbody>
+                    </table>
+                </#list>
+                </#if>
+            </div>
+        </div>
+    </div>
+    <!-- content -->
+	<!-- 通过 yyd_footer.宏名称进行使用 -->
+    <@lhb_footer.footer/>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<#assign ctx=request.contextPath>
+<html>
+	<head>
+    	<title>轮播管理-添加轮播数据</title>
+    	<meta charset="UTF-8">
+     	<link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap.css" />
+	    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap-responsive.css" />
+	    <link rel="stylesheet" type="text/css" href="${ctx}/css/style.css" />
+	    <link rel="stylesheet" type="text/css" href="${ctx}/css/admin-right.css" />
+	    <script type="text/javascript" src="${ctx}/js/jquery-1.11.0.js"></script>
+		<script type="text/javascript" src="${ctx}/js/jquery-migrate-1.2.1.js"></script>
+		
+		<script type="text/javascript" src="${ctx}/js/My97DatePicker/WdatePicker.js"></script>
+		
+    	<script type="text/javascript">
+    	 	$(function(){
+    	 		
+    	 		//商品类型数据ajax加载
+    	 		var url = "${ctx}/admin/goodsType/goodsTypeListAjax";
+    	 	    $.getJSON(url,function(list){
+    	 	    	$.each(list,function(i,goodsType){
+    	 	    		$("<option/>").val(goodsType.code).text(goodsType.name).appendTo("#goodsType");
+    	 	    	});
+    	 	    });
+    	 	    
+    	 	    //商品类型下拉列表联动操作
+    	 	   $("#goodsType").change(function(){
+    	 		  //清空下拉列表项
+    	 		  $("#goods > option").remove();
+    	 		  var url2 = "${ctx}/admin/goods/goodsListAjax?code="+this.value; 
+    	 		  $.getJSON(url2,function(list){
+      	 	    	$.each(list,function(i,goods){
+      	 	    		$("<option/>").val(goods.id).text(goods.title).appendTo("#goods");
+      	 	    	});
+      	 	    });
+    	 	   });
+    	 	    
+		    	/** 为添加商品表单绑定提交事件 */
+		    	$("#addForm").submit(function(){
+		    		/** 表单输入校验 */
+		    		var limitDate = $("#limitDate");
+		    		var msg = "";
+		    		
+		    		// 判断表单元素
+		    		if ($.trim(limitDate.val()) == ""){
+		    			msg = "请选择抢购开始时间！";
+		    			limitDate.focus();
+		    		}
+		    		if (msg != ""){
+		    			alert(msg);
+		    			return false;
+		    		}else{
+		    			return true;
+		    		}
+		    	});
+		    	
+		    	/** 为返回按钮绑定点击事件 */
+				$('#backid').click(function(){
+					window.location.href = "${ctx}/admin/timeLimited/timeList";
+				});
+    	 	});
+		</script>
+	</head>
+	<body>
+		<table class="table table-bordered table-hover definewidth m10">
+		    <form id="addForm" action="${ctx}/admin/timeLimited/addTime" method="POST" class="definewidth m20">
+		        <tr>
+		            <td width="10%" class="tableleft">商品类型</td>
+		            <td>
+		            	<select id="goodsType"></select>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td width="10%" class="tableleft">商品</td>
+		            <td>
+		            	<select id="goods" name="goods.id"></select>
+		            </td>
+		        </tr>
+		        <tr>
+		        	<td width="10%" class="tableleft">抢购开始时间</td>
+		            <td><input type="text" class="Wdate" name="limitDate" id="limitDate" onfocus="WdatePicker({lang:'zh-cn',dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'now'});"/></td>
+		        </tr>
+		         <tr>
+		        	<td>
+		            	&nbsp;&nbsp;<button type="submit" class="btn btn-primary">保存</button>
+		            </td>
+		            <td>
+		                &nbsp;&nbsp;<button type="button" class="btn btn-success" name="backid" id="backid">返回</button>
+		            </td>
+	        	</tr>
+		    </form>
+		</table>
+	</body>
+</html>

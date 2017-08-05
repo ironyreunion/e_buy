@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<#assign ctx=request.contextPath>
+<html>
+<head>
+    <title>后台管理系统</title>
+	<meta charset="UTF-8">
+   <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/assets/css/adminLogins.css" />
+    
+    <script type="text/javascript" src="${ctx}/js/jquery-1.11.0.js"></script>
+    <script type="text/javascript" src="${ctx}/js/bootstrap.js"></script>
+    
+    <script type="text/javascript">
+      $(function(){
+          
+          $("strong[id$='_tip']").hide();
+    	  
+          $("#vimg").mouseover(function(){
+              $(this).css("cursor","pointer");
+          }).click(function(){
+              $("#vimg").attr("src", "${ctx}/verify?random=" + Math.random());
+          });
+          
+          
+          /** 为表单绑定onsubmit提交事件 */
+            $("#loginBtn").click(function(){
+                /** 隐藏所有的提示信息 */
+                $("strong[id$='_tip']").hide(); 
+                var isSubmit = true;
+                /** 做表单输入校验 */
+                var userId = $("#userId");
+                var pwd = $("#pwd");
+                var code = $("#code");
+                if ($.trim(userId.val()) == ""){
+                    $("#userId_tip").html("* 用户名不能空！").show();
+                    isSubmit = false;
+                    userId.focus();// 调用文本框获取焦点方法
+                }else if (!/^\w{5,20}$/.test($.trim(userId.val()))){
+                    $("#userId_tip").html("* 用户名格式不正确！").show();
+                    isSubmit = false;
+                    userId.focus();// 调用文本框获取焦点方法
+                }else if ($.trim(pwd.val()) == ""){
+                    $("#pwd_tip").html("* 密码不能为空！").show();
+                    isSubmit = false;
+                    pwd.focus();// 调用文本框获取焦点方法
+                }else if (!/^\w{6,20}$/.test($.trim(pwd.val()))){
+                    $("#pwd_tip").html("* 密码格式不正确！").show();
+                    isSubmit = false;
+                    pwd.focus();// 调用文本框获取焦点方法
+                }else if ($.trim(code.val()) == ""){
+                    $("#code_tip").html("* 验证码不能为空！").show();
+                    isSubmit = false;
+                    code.focus();// 调用文本框获取焦点方法
+                }else if (!/^[a-zA-Z0-9]{4}$/.test($.trim(code.val()))){
+                    $("#code_tip").html("* 验证码格式不正确！").show();
+                    isSubmit = false;
+                    code.focus();// 调用文本框获取焦点方法
+                } 
+                /** 判断表单是否通过校验 */
+                if (isSubmit){
+                    var params = $("form[class=form-signin]").serialize();
+                    var url = "${ctx}/admin/adminLoginAjax";
+                    $.post(url,params,function(data){
+                            if(data.status == 0){
+                                window.location = "${ctx}/admin/main"
+                            }else{
+                                alert(data.tip);
+                                //刷新验证码
+                                $("#vimg").trigger("click");
+                            }
+                    },"json");
+                }
+            });
+          
+            /** 绑定回车键绑定事件，当用户按了回车键，就提交表单 */
+            $(document).keydown(function(event){
+                if (event.keyCode === 13){ // 等于13代表按了回车键
+                    // 触发表单提交按钮的点击事件
+                    $("#loginBtn").trigger("click");
+                }
+            });
+            
+            /** 跳出框架界面的js代码 */
+            if(top.location != self.location){
+            	top.location = self.location;
+            }
+      });
+
+   </script>
+    
+</head>
+<body>
+<div class="container">
+
+    <form class="form-signin">
+        <h2 class="form-signin-heading">
+            <center>E购通后台登录</center></h2>
+        <input type="text" name="userId" id="userId" value="admin" class="input-block-level" placeholder="账号">
+        <font>
+            <strong  id="userId_tip">* 用户名不能为空！</strong>
+        </font>
+        <input type="password" name="password" id="pwd" value="123456" class="input-block-level" placeholder="密码">
+        <font>
+            <strong  id="pwd_tip">* 密码不能为空！</strong><br>
+        </font>
+        <input type="text" name="vcode" id="code" class="input-medium" placeholder="验证码">
+        <img src="${ctx}/verify" id="vimg" alt="验证码" width="90" height="32" style="margin-top:-15px;"/>
+        <font>
+            <br><strong  id="code_tip">* 验证码不能为空！</strong>
+        </font>
+        <p><button class="btn btn-large btn-primary" type="button" id="loginBtn">登录</button></p>
+    </form>
+
+</div>
+</body>
+</html>

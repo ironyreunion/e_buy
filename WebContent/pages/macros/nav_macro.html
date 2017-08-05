@@ -1,0 +1,95 @@
+<!-- 宏文件中的内容是方便重复使用的内容
+	nav 宏的名称，方便其他地方使用
+	ctx 表示参数，可以可以有默认值，不需要按顺序赋值
+ -->
+<#macro nav ctx>
+	<script>
+	$(function(){
+		$.ajax({
+			url : "${ctx}/customer/getGoodsTypeAjax", 
+			type : "post",
+			dataType : "json",
+			async : false,
+			success : function(data){
+				//[{maxType: {code:'0001', name :'手机'}, minType : [{code:'00010001',name:'苹果'},{code:'00010002',name:'华为'},]}]
+				$.each(data, function(i, item){
+					if (i <= 5){
+						//获取大类型
+						var maxTypeJson = item.maxType;	
+						var li = $("<li/>");
+						$("<a/>").attr("href","${ctx}/customer/findGoods?typeCode="+ maxTypeJson.code).text(maxTypeJson.name).appendTo(li);
+						var ul = $("<ul/>").addClass("sub-Menu");
+						//循环小类型
+						$.each(item.minType, function(j,min){
+							$("<li/>").append("<a href='${ctx}/customer/findGoods?typeCode="+min.code+"'>"+trim(min.name)+"</a>").appendTo(ul);
+						});
+						
+						li.append(ul).appendTo(".nav-menu");
+						if (i == 5){
+							var li = $("<li/>");
+							$("<a/>").attr("href", "javascript:;").text("更多").addClass("gd_").appendTo(li);
+							$("<div/>").addClass("sub-Menu tc").attr("id", "yaDiv").appendTo(li);
+							li.appendTo(".nav-menu");
+						}
+					}else{//添加更多导航栏菜单下面的显示数据
+						//获取大类型
+						var maxTypeJson = item.maxType;	
+						var maxDiv = $("<div/>").addClass("lx_");
+						$("<a href='${ctx}/customer/findGoods?typeCode="+maxTypeJson.code+"'><span>"+
+								maxTypeJson.name+"</span></a>").appendTo(maxDiv);
+						var minDiv = $("<div/>").addClass("xl_clear").attr("id","xl_");
+						//循环小类型
+						$.each(item.minType, function(j,min){
+							$("<a/>").attr("href","${ctx}/customer/findGoods?typeCode="+min.code).text(trim(min.name)).appendTo(minDiv);
+						});
+						$("#yaDiv").append(maxDiv).append(minDiv);
+					}
+				});
+			}
+		});
+		
+		/** 获取所有的主菜单 */
+		var menu = $(".nav-menu > li");
+		/** 为所有的主菜单绑定onmouseover与onmouseout事件 */
+		menu.hover(
+			function(){ // onmouseover
+				/** 为主菜单li添加样式 */
+				$(this).addClass("active");
+				/** 通过主菜单找对应的子菜单用300毫秒滑下显示出来 */
+				$(this).find(".sub-Menu").slideDown(300);
+			},
+			function(){ // onmouseout
+				/** 首页主菜单li的样式不删除 */
+				if (this.id != "home"){
+					/** 删除主菜单li样式 */
+					$(this).removeClass("active");
+				}
+				/** 通过主菜单找对应的子菜单用10毫秒滑上隐藏出来 */
+				$(this).find(".sub-Menu").slideUp(10);
+			}
+		);
+	});
+	
+	//删除小类型前面的----
+	var trim = function(minName){
+		return minName.replace(/^-+/g,"");
+	}
+	
+	</script>
+	
+	
+	<!-- nav 导航区开始 -->
+	<div class="nav">
+		<div class="container">
+			<ul class="nav-menu">
+				<!-- 主菜单 -->
+				<li id="home" class="active">
+					<a href="${ctx}/">首  页</a>
+				</li>
+				<!-- 主菜单 -->
+				<!-- 主菜单 -->
+			</ul>
+		</div>
+	</div>
+	<!-- nav end 导航区结束-->
+</#macro>

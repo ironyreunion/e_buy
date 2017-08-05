@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>E购通电子商务平台-订单</title>
+	<#include "header.html"/>
+	<!-- 引入宏文件到当前页面，并通过 yyd_footer进行使用 -->
+	<#import "/macros/header_macro.html" as lhb_header>
+	<#import "/macros/footer_macro.html" as lhb_footer>
+	<#import "/macros/nav_macro.html" as lhb_nav>
+	<link rel="stylesheet" href="${ctx}/css/style1.css"/>
+
+</head>
+<body>
+	<@lhb_header.header ctx="${ctx}"/>
+	<!-- nav 导航区开始 -->
+	<@lhb_nav.nav ctx="${ctx}"/>
+	
+	<!-- content -->
+	<div class="content">
+		<div class="container">
+			<div class="dz_">
+			<form>
+				<div class="box clear">
+					<div class="label">
+						<p><span>*</span>收 货 人：</p>
+					</div>
+					<div class="input"><input type="text" value="${session_user.name}"></div>
+				</div>
+			
+				<div class="box clear">
+					<div class="label">
+						<p><span>*</span>手机号码：</p>
+					</div>
+					<div  class="input"><input type="text" value="${session_user.phone}"></div>
+				</div>
+				<div class="box clear">
+					<div class="label">
+						<p>邮箱：</p>
+					</div>
+					<div  class="input"><input type="text" value="${session_user.email}"></div>
+				</div>
+				
+				<div class="box clear">
+					<div class="label">
+						<p><span>*</span>详细地址：</p>
+					</div>
+					<div  class="input"><input type="text" style="width:300px;" value="${session_user.address}"></div>
+				</div>
+				
+				<strong>用来接收订单提醒邮件，便于您及时了解订单状态</strong><br/><br/>
+				<a class="bc_" href="javascript:void(0)">保存收货人信息</a>
+			</form>
+			</div>
+			<div class="ps_">
+				<span  style="padding-left:10px">支付及配送方式</span>
+				<p>支付方式：在线支付</p>
+				<p>配送方式：快递运输</p>
+			</div>
+			<div class="spqd_">
+				<span  style="padding-left:10px">商品清单</span>
+				<table>
+				<thead>
+					<tr>
+						<th class="th1">商品名称</th>
+						<th>原价</th>
+						<th>优惠价</th>
+						<th>小计（元）</th>
+						<th>数量</th>
+					</tr>
+				</thead>
+				<tbody>
+					<#list goodsList as goods>
+					<tr>
+						<td>${goods.title}</td>
+						<td>￥${goods.price}</td>
+						<td>￥${goods.favorablePrice}</td>
+						<td class="red">￥${goods.buyMoney}</td>
+						<td>${goods.buyNum}</td>
+					</tr>
+					</#list>
+				</tbody>
+				</table>
+				
+			</div>
+			<div class="ps_">
+				<span style="padding-left:10px">结算信息</span>
+				<div class="jsk">
+					<span>商品金额：${totalMoney}元  + 运费0.00元 </span>
+					<p>应付总额：<strong class="red">￥${totalMoney}</strong>元</p>
+				</div>
+			</div>
+			<form action="${ctx}/customer/saveOrder" method="post">
+				<p class="tj_">
+					<button type="submit">确定订单</button>
+				</p>
+			</form>
+		</div>
+	</div>
+	<!-- content -->
+	<!-- 通过 yyd_footer.宏名称进行使用 -->
+	<@lhb_footer.footer/>
+</body>
+</html>

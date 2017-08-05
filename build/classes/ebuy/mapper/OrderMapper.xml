@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ebuy.mapper.OrderMapper">
+
+	<sql id="findOrder">
+        select * from e_order 
+    </sql>
+    
+    <!-- 查询所有订单 -->
+    <select id="getOrderList" resultMap="orderResultMap">
+            <include refid="findOrder"/>
+                order by id
+    </select>
+	
+    <!-- 根据订单id获取订单信息 -->
+    <select id="getOrderById" resultMap="orderResultMap">
+        <include refid="findOrder"/>
+        where id = #{id}
+    </select>
+    
+    <!-- 保存/新增订单数据 -->
+    <insert id="saveOrder">
+        <!-- 为了解决 在MyBatis中Insert数据时不支持 主键自动生成 的问题 -->
+        <selectKey keyProperty="id" resultType="int">
+            <!-- 取得最后插入的数据的id -->
+            select last_insert_id() as id
+        </selectKey>
+        insert into E_ORDER(
+            USER_ID,CREATE_DATE,TRADING_STATUS,TOTAL_AMOUNT,ORDER_CODE
+        )values(
+            #{user.id},#{createDate},#{tradingStatus},
+            #{totalAmount},#{orderCode}
+        )
+    </insert>
+    
+    <!-- 更新订单支付状态 -->
+    <update id="updateOrderAliPayStatus">
+        update E_ORDER set TRADING_STATUS=1,ALIPAY=1 where ORDER_CODE = #{orderCode}
+    </update>
+    
+    <!-- 根据用户Id查询订单 -->
+    <select id="getOrderByUserId" resultMap="orderItemResultMap">
+        <include refid="findOrder"/>
+        where USER_ID = #{userId}
+    </select>
+    
+    <!-- 根据订单号查找订单 -->
+    <select id="getOrderByOrderCode" resultMap="orderItemResultMap">
+        <include refid="findOrder"/>
+        where ORDER_CODE = #{orderCode}
+    </select>
+    
+	<!-- 定义ResultMap -->
+    <resultMap id="orderBaseResultMap" type="Order" autoMapping="true">
+        <!-- 定义列和java对象属性的对应关系 -->
+        <result column="ORDER_CODE" property="orderCode"/>
+        <result column="CREATE_DATE" property="createDate"/>
+        <result column="SEND_DATE" property="sendDate"/>
+        <result column="TRADING_STATUS" property="tradingStatus"/>
+        <result column="TOTAL_AMOUNT" property="totalAmount"/>
+        <result column="ALIPAY" property="alipay"/>
+    </resultMap>
+    
+    <resultMap id="orderResultMap"  type="Order" extends="orderBaseResultMap">
+        <!-- 一对一的关联关系配置（一份订单对应一个用户） -->
+        <association property="user" column="USER_ID" javaType="User" 
+        select="ebuy.mapper.UserMapper.getUserById"/>  
+    </resultMap>
+    
+    <!--  -->
+    <resultMap id="orderItemResultMap" type="Order" extends="orderBaseResultMap">
+        <!-- 
+        property   属性名，collection中存放的是Order.java中的orderItems属性
+        ofType     集合中每一个元素的Type
+        javaType   属性的类型，看Order.java可知是ArrayList
+        column     将Order中的id拿出来去到OrderItem中查询
+        select     做一个查询
+                 查询回来的数据放在(type)Order类中的(property)orderItems集合里，这个集合里的每一个都是
+             (ofType)OrderItem数据，集合是(javaType)ArrayList类型
+         -->
+        <collection property="orderItems" ofType="OrderItem" javaType="ArrayList" column="id"
+            select="ebuy.mapper.OrderItemMapper.getOrderItemByOrderId"/>
+    </resultMap>
+    
+</mapper>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<#assign ctx=request.contextPath>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/bootstrap-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/userList.css" />
+    
+    <script type="text/javascript" src="${ctx}/js/jquery.js"></script>
+    <script type="text/javascript" src="${ctx}/js/jquery.sorted.js"></script>
+    <script type="text/javascript" src="${ctx}/js/bootstrap.js"></script>
+    <script type="text/javascript" src="${ctx}/js/ckform.js"></script>
+    <script type="text/javascript" src="${ctx}/js/common.js"></script>
+    
+    <!-- 引入日期js控件 -->
+    <script type="text/javascript" src="${ctx}/js/My97DatePicker/WdatePicker.js"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            //返回列表页面操作
+            $('#backid').click(function(){
+                window.location.href="${ctx}/admin/user/userList";
+            });
+            
+            //自己根据前面的内容补充表单验证操作
+        });
+    </script>
+</head>
+
+<body>
+	<form action="${ctx}/admin/user/update" method="post" class="definewidth m20">
+	    <input type="hidden" name="id" value="${user.id}" />
+		<table class="table table-bordered table-hover ">
+		    <tr>
+		        <td width="10%" class="tableleft">用户名称</td>
+		        <td><input type="text" name="userId" value="${user.userId}" disabled="disabled"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">真实姓名</td>
+		        <td><input type="text" name="name" value="${user.name}"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">角色</td>
+		        <td>
+		            <input type="radio" name="role" value="1" <#if user.role==1>checked</#if>/>普通用户 &nbsp;&nbsp;
+		            <input type="radio" name="role" value="2" <#if user.role==2>checked</#if>/>管理员
+		        </td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">省份</td>
+		        <td><input type="text" name="province" value="${user.province}"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">城市</td>
+		        <td><input type="text" name="city" value="${user.city}"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">手机号码</td>
+		        <td><input type="text" name="phone" value="${user.phone}"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">邮箱</td>
+		        <td><input type="text" name="email" value="${user.email}"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">联系地址</td>
+		        <td><input type="text" name="address" value="${user.address}"/></td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">生日</td>
+		        <td>
+		        <input  class="Wdate" id="birthday" value="${user.birthday?string('yyyy-MM-dd')}" 
+		            name="birthday" type="text" placeholder="请选择出生日期" onfocus="WdatePicker({lang:'zh-cn',fmt:'yyyy-MM-dd'});">
+		        </td>
+		    </tr>
+		    <tr>
+		        <td width="10%" class="tableleft">激活状态</td>
+		        <td>
+		            <#if user.activeStatus==1>
+		                    <font color="green">激活</font>
+		            <#else>
+		                    <font color="red">未激活</font>
+		            </#if>  
+		        </td>
+		    </tr>
+		    <tr>
+		        <td class="tableleft"></td>
+		        <td>
+		            <button type="submit" class="btn btn-primary" type="button">保存</button> &nbsp;&nbsp;
+		            <button type="button" class="btn btn-success" name="backid" id="backid">返回列表</button>
+		        </td>
+		    </tr>
+		</table>
+	</form>
+</body>
+</html>
+<script>
+    $(function () {       
+		$('#backid').click(function(){
+				window.location.href="index.html";
+		 });
+
+    });
+</script>

@@ -1,0 +1,138 @@
+<!doctype html>
+<#assign ctx=request.contextPath>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>E购通电子商务平台-商品列表</title>
+	<#include "header.html"/>
+	<#import "/macros/header_macro.html" as yyd_header>
+	<#import "/macros/footer_macro.html" as yyd_footer>
+	<#import "/macros/nav_macro.html" as yyd_nav>
+
+	<link rel="stylesheet" href="${ctx}/css/style1.css"/>
+	<!-- 引入jQuery框架 -->
+	<script type="text/javascript" src="${ctx}/js/jquery-1.11.0.js"></script>
+	<script type="text/javascript" src="${ctx}/js/jquery-migrate-1.2.1.js"></script>
+	<script type="text/javascript">
+		
+	</script>
+</head>
+<body>
+
+	<@yyd_header.header ctx="${ctx}"/>
+	<!-- nav 导航区开始 -->
+	<@yyd_nav.nav ctx="${ctx}"/>
+	<!-- nav end 导航区结束-->
+
+	<!-- content -->
+	<div class="content">
+		<div class="container">
+			<div class="wplb">
+				<!-- 判断有没有选择物品类型，如果有就显示位置 -->
+				
+					<div class="wph_">
+						<span>当前位置：手机&nbsp;&gt; 华为</span>
+					</div>
+				<div class="sx_">
+					<p><span><font color="red">手机</font>商品筛选</span> 共计${pageModel.recordCount}个商品</p>
+				</div>
+				<div class="pp_ clear">
+					<div class="ppb"><span>品牌:</span></div>
+					<div class="pz">
+						<table>
+							<tr>
+								<td><a href="${ctx}/customer/findGoods.action?typeCode=00010001"><img src="${ctx}/images/pinpai/2.jpg"></a></td>
+								<td><a href="${ctx}/customer/findGoods.action?typeCode=00010002"><img src="${ctx}/images/pinpai/1.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/3.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/4.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/5.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/6.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/7.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/8.jpg"></a></td>
+							</tr>
+							<tr>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/9.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/10.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/11.jpg"></a></td>
+								<td><a href="${ctx}/customer/findGoods?typeCode=00010007"><img src="${ctx}/images/pinpai/12.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/13.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/14.jpg"></a></td>
+								<td><a href="javascript:void(0)"><img src="${ctx}/images/pinpai/15.jpg"></a></td>
+								<td><a href="${ctx}/customer/findGoods?typeCode=00010008"><img src="${ctx}/images/pinpai/16.jpg"></a></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="jg clear" >
+					<div class="_bts"><span style="line-height:22px;">价格:</span></div>
+					<div class="_nr">
+					<a href="javascript:void(0)">0-299</a>
+					<a href="javascript:void(0)">300-699</a>
+					<a href="javascript:void(0)">700-1099</a>
+					<a href="javascript:void(0)">1100-2099</a>
+					<a href="javascript:void(0)">2100-3799</a>
+					<a href="javascript:void(0)">3800-5099</a>
+					<a href="javascript:void(0)">5100以上</a>
+					<input type="text">-<input type="text"><button>确定</button>
+					</div>
+					
+				</div>
+				<div class="jg clear" style="border-bottom:1px solid #dcdcdc;">
+					<div class="_bts"><span>网络:</span></div>
+					<div class="_nr">
+						<a href="javascript:void(0)">移动4G</a>
+						<a href="javascript:void(0)">联通4G</a>
+						<a href="javascript:void(0)">电信4G</a>
+						<a href="javascript:void(0)">移动3G</a>
+						<a href="javascript:void(0)">联通3G</a>
+						<a href="javascript:void(0)">电信3G</a>
+						<a href="javascript:void(0)">移动2G/联通2G</a>
+						<a href="javascript:void(0)">电信2G</a>
+						<a href="javascript:void(0)">双卡</a>
+						<a href="javascript:void(0)">其他</a>
+					</div>
+				</div>
+				<div class="clear">
+					<#if goodsList??>
+					<#list goodsList as goods>
+						<div class="sp_">
+							<div class="dgsp">
+								<a href="${ctx}/customer/detail?id=${goods.id}"><img src="${ctx}/${goods.image}"></a>
+								<img src="${ctx}/${goods.image}" class="sl">
+								<p class="red"><span>￥</span>${goods.price}<img src="${ctx}/images/5.jpg"></p>
+								<a href="${ctx}/customer/detail?id=${goods.id}">
+									<#if goods.title?length lt 20>
+										${goods.title}
+									<#else>
+										${goods.title[0..20]}
+									</#if>
+								</a><br/>
+								<font color="#afafaf" size="2">已有<strong>64125</strong>人评价</font>
+							</div>
+						</div>
+					</#list>
+					</#if>
+				</div>
+			
+				<!-- 分页标签 -->
+		<#if pageModel.recordCount??>
+		<!-- 分页标签-->
+		<div id="pagerInfo" style="margin:16px 0px; 
+		text-align:center;background-color:#FFFF00;color:blue">
+  		共${pageModel.recordCount}个商品,
+  		分${((pageModel.recordCount+pageModel.pageSize -1)/pageModel.pageSize)?int}页
+  		</div>
+  	 	<div id="pager">
+  		<#import "common/pager.html" as page>
+  		<@page.pager pageIndex=pageModel.pageIndex pageSize=pageModel.pageSize 
+  			recordCount=pageModel.recordCount toURL="${ctx}/customer/searchs"/>
+    	</div>
+		</#if>
+
+		</div>
+	</div>
+	<!-- content -->
+	<!-- 通过 yyd_footer.宏名称进行使用 -->
+	<@yyd_footer.footer/>
+</body>
+</html>
